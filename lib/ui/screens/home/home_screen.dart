@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sarmad/_base/widgets/base_stateful_widget.dart';
 import 'package:sarmad/res/const_colors.dart';
+import 'package:sarmad/ui/screens/home/bloc/home_bloc.dart';
+import 'package:sarmad/ui/widgets/widgets.dart';
 import 'package:sarmad/util/lang/app_localization_keys.dart';
+import 'package:sarmad/util/ui/feedback_controller.dart';
 import 'package:sarmad/util/ui/screen_controller.dart';
 
 class HomeScreen extends BaseStatefulWidget {
@@ -19,11 +23,14 @@ class _HomeScreenState extends BaseState<HomeScreen> {
   final TextEditingController _fNameController = TextEditingController();
   final TextEditingController _mNameController = TextEditingController();
   final TextEditingController _natController = TextEditingController();
+  late final HomeBloc _homeBloc;
 
   @override
   void initState() {
     /// to exit full screen
     exitFullScreen();
+    _homeBloc = context.read<HomeBloc>();
+    _homeBloc.add(HomeInitialEvent());
     super.initState();
   }
 
@@ -79,7 +86,7 @@ class _HomeScreenState extends BaseState<HomeScreen> {
               shape: MaterialStateProperty.all(const RoundedRectangleBorder(
                   borderRadius: BorderRadius.all(Radius.circular(10))))),
           onPressed: () {
-            onSearchTap();
+            _homeBloc.add(NewSearchEvent());
           },
           child: Row(
             children: [
@@ -113,28 +120,58 @@ class _HomeScreenState extends BaseState<HomeScreen> {
         });
   }
 
-  ///Returns a listview or gridview regarding user preferences
+  ///Returns a listview or gridview regarding user preferences with API data
   ///uses isGridView bool parameter
   Widget _getListOrGridView() {
-    return Expanded(
-      child: isGridView
-          ? GridView.builder(
-              itemCount: 10,
-              padding: EdgeInsets.only(
-                  left: width * 0.02,
-                  right: width * 0.02,
-                  bottom: width * 0.08),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2, childAspectRatio: 1.25),
-              itemBuilder: (context, index) => _getDataList())
-          : ListView.builder(
-              itemCount: 10,
-              padding: EdgeInsets.only(
-                  left: width * 0.02,
-                  right: width * 0.02,
-                  bottom: width * 0.08),
-              itemBuilder: (context, index) => _getDataList(),
-            ),
+    return BlocConsumer<HomeBloc, HomeState>(
+      listener: (context, state) {
+        if (state is DataLoadingState) {
+          showLoading();
+        } else {
+          hideLoading();
+        }
+        if (state is NewSearchState) {
+          onSearchTap();
+        }
+        if (state is DataLoadedState) {
+          showToast("Search Pressed");
+        }
+        if (state is ErrorState) {
+          showToast(state.message);
+        }
+        if (state is NetworkError) {
+          showToast(state.message);
+        }
+      },
+      builder: (context, state) {
+        if (state is HomeInitialState) {
+          return Expanded(child: noData(appLocal));
+        } else if(state is DataLoadedState){
+          return Expanded(
+            child: isGridView
+                ? GridView.builder(
+                    itemCount: 10,
+                    padding: EdgeInsets.only(
+                        left: width * 0.02,
+                        right: width * 0.02,
+                        bottom: width * 0.08),
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2, childAspectRatio: 1.25),
+                    itemBuilder: (context, index) => _getDataList())
+                : ListView.builder(
+                    itemCount: 10,
+                    padding: EdgeInsets.only(
+                        left: width * 0.02,
+                        right: width * 0.02,
+                        bottom: width * 0.08),
+                    itemBuilder: (context, index) => _getDataList(),
+                  ),
+          );
+        }else {
+          return Expanded(child: noData(appLocal));
+        }
+      },
     );
   }
 
@@ -203,11 +240,14 @@ class _HomeScreenState extends BaseState<HomeScreen> {
                       children: [
                         _searchBottomSheetTitle(),
                         const SizedBox(height: 20),
-                        _getSearchField("First name", _fNameController),
+                        _getSearchField(
+                            translate(LangKeys.firstName), _fNameController),
                         const SizedBox(height: 10),
-                        _getSearchField("Middle name", _mNameController),
+                        _getSearchField(
+                            translate(LangKeys.middleName), _mNameController),
                         const SizedBox(height: 10),
-                        _getSearchField("Nationality", _natController),
+                        _getSearchField(
+                            translate(LangKeys.nationality), _natController),
                       ],
                     ),
                     _getSearchButton()
@@ -243,14 +283,17 @@ class _HomeScreenState extends BaseState<HomeScreen> {
           style: ButtonStyle(
               shape: MaterialStateProperty.all(const RoundedRectangleBorder(
                   borderRadius: BorderRadius.all(Radius.circular(10))))),
-          onPressed: () {},
-          child: Text("Search")),
+          onPressed: () {
+            Navigator.of(context).pop();
+            _homeBloc.add(SearchButtonEvent());
+          },
+          child: Text(translate(LangKeys.search))),
     );
   }
 
   Widget _searchBottomSheetTitle() {
     return Text(
-      "Search",
+      translate(LangKeys.search),
       textAlign: TextAlign.center,
       style: const TextStyle(
           fontSize: 18, fontWeight: FontWeight.w700, color: ConstColors.app),

@@ -5,6 +5,7 @@ import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sarmad/api/environments/environment.dart';
 import 'package:sarmad/bloc/lang/language_cubit.dart';
+import 'package:sarmad/ui/screens/home/bloc/home_bloc.dart';
 import 'package:sarmad/ui/screens/home/home_screen.dart';
 import 'package:sarmad/ui/screens/splash_screen/splash_screen.dart';
 import 'package:sarmad/util/lang/app_localization.dart';
@@ -37,6 +38,8 @@ class SarmadApp extends StatelessWidget {
       providers: [
         BlocProvider<LanguageCubit>(
             create: (BuildContext context) => LanguageCubit()),
+        BlocProvider<HomeBloc>(
+            create: (BuildContext context) => HomeBloc()),
       ],
       child: BlocBuilder<LanguageCubit, Locale>(
         builder: (context, localeState) {

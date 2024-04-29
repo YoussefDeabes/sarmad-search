@@ -5,7 +5,13 @@ import 'package:sarmad/util/lang/app_localization_keys.dart';
 
 Widget noData(AppLocalizations appLocal) {
   return Center(
-    child: Text(appLocal.translate(LangKeys.noData)),
+    child: Text(
+      appLocal.translate(LangKeys.noData),
+      textAlign: TextAlign.center,
+      softWrap: true,
+      style: const TextStyle(
+          color: ConstColors.text, fontSize: 18, fontStyle: FontStyle.italic),
+    ),
   );
 }
 
