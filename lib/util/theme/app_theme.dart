@@ -4,12 +4,13 @@ import 'package:sarmad/util/lang/app_localization.dart';
 
 class AppTheme {
   final Locale locale;
+
   const AppTheme(this.locale);
 
   ThemeData get themeDataLight {
     return ThemeData(
         primarySwatch: ConstColors.primarySwatch,
-        fontFamily: locale.languageCode == codeAr ? "Tajawal" : 'Cairo',
+        fontFamily: 'Cairo',
         useMaterial3: false,
         scaffoldBackgroundColor: ConstColors.greyLight);
   }

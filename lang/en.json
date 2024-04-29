@@ -2,5 +2,14 @@
   "appName": "Sarmad",
   "pleaseWait": "Please wait",
   "youAreCurrentlyOffline": "No internet connection",
-  "noData": "No data"
+  "noData": "No data",
+  "search": "Search",
+  "firstName": "First name",
+  "middleName": "Middle name",
+  "nationality": "Nationality",
+  "newSearch": "New search",
+  "name": "Name",
+  "description": "Description",
+  "placeOfBirth": "Place of birth",
+  "score": "Score"
 }

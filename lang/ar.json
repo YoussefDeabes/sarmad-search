@@ -2,5 +2,14 @@
   "appName": "إمكان العربية",
   "pleaseWait": "الرجاء الانتظار",
   "youAreCurrentlyOffline": "لا يوجد اتصال بالانترنت",
-  "noData": "لا توجد بيانات"
+  "noData": "لا توجد بيانات",
+  "search": "بحث",
+  "firstName": "الاسم الاول",
+  "middleName": "الاسم الاوسط",
+  "nationality": "الجنسية",
+  "newSearch": "بحث جديد",
+  "name": "الاسم",
+  "description": "الوصف",
+  "placeOfBirth": "محل الميلاد",
+  "score": "النتيجة"
 }
