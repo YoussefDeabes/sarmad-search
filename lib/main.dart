@@ -77,7 +77,7 @@ class SarmadApp extends StatelessWidget {
 
             /// Returns a locale which will be used by the app
             localeResolutionCallback: AppLocalizations.localeResolutionCallback,
-            locale: localeState,
+            // locale: localeState,
             home: const SplashScreen(),
             routes: {
               SplashScreen.routeName: (ctx) => const SplashScreen(),

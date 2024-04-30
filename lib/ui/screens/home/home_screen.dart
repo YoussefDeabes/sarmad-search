@@ -158,7 +158,7 @@ class _HomeScreenState extends BaseState<HomeScreen> {
                         bottom: width * 0.08),
                     gridDelegate:
                         const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2, childAspectRatio: 0.60),
+                            crossAxisCount: 2, childAspectRatio: 0.55),
                     itemBuilder: (context, index) =>
                         _getDataList(state.data.screenResult, index))
                 : ListView.builder(
