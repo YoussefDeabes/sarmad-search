@@ -6,3 +6,9 @@ extension StringExtension on String {
   String capitalizedFirstChar() =>
       length > 0 ? '${this[0].toUpperCase()}${substring(1).toLowerCase()}' : '';
 }
+
+extension ConcatenateColon on String {
+  String get concatenateColon {
+    return "$this:";
+  }
+}

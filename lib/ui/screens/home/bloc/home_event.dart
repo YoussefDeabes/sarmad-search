@@ -7,4 +7,7 @@ class HomeInitialEvent extends HomeEvent {}
 
 class NewSearchEvent extends HomeEvent {}
 
-class SearchButtonEvent extends HomeEvent {}
+class SearchButtonEvent extends HomeEvent {
+  final SearchSendModel model;
+  SearchButtonEvent(this.model);
+}

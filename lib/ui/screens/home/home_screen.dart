@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sarmad/_base/widgets/base_stateful_widget.dart';
+import 'package:sarmad/api/models/search/SearchWrapper.dart';
+import 'package:sarmad/api/models/search/search_send_model.dart';
 import 'package:sarmad/res/const_colors.dart';
 import 'package:sarmad/ui/screens/home/bloc/home_bloc.dart';
 import 'package:sarmad/ui/widgets/widgets.dart';
@@ -133,9 +135,6 @@ class _HomeScreenState extends BaseState<HomeScreen> {
         if (state is NewSearchState) {
           onSearchTap();
         }
-        if (state is DataLoadedState) {
-          showToast("Search Pressed");
-        }
         if (state is ErrorState) {
           showToast(state.message);
         }
@@ -146,29 +145,33 @@ class _HomeScreenState extends BaseState<HomeScreen> {
       builder: (context, state) {
         if (state is HomeInitialState) {
           return Expanded(child: noData(appLocal));
-        } else if(state is DataLoadedState){
+        } else if (state is DataLoadingState) {
+          return const SizedBox();
+        } else if (state is DataLoadedState) {
           return Expanded(
             child: isGridView
                 ? GridView.builder(
-                    itemCount: 10,
+                    itemCount: state.data.screenResult?.length,
                     padding: EdgeInsets.only(
                         left: width * 0.02,
                         right: width * 0.02,
                         bottom: width * 0.08),
                     gridDelegate:
                         const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2, childAspectRatio: 1.25),
-                    itemBuilder: (context, index) => _getDataList())
+                            crossAxisCount: 2, childAspectRatio: 0.60),
+                    itemBuilder: (context, index) =>
+                        _getDataList(state.data.screenResult, index))
                 : ListView.builder(
-                    itemCount: 10,
+                    itemCount: state.data.screenResult?.length,
                     padding: EdgeInsets.only(
                         left: width * 0.02,
                         right: width * 0.02,
                         bottom: width * 0.08),
-                    itemBuilder: (context, index) => _getDataList(),
+                    itemBuilder: (context, index) =>
+                        _getDataList(state.data.screenResult, index),
                   ),
           );
-        }else {
+        } else {
           return Expanded(child: noData(appLocal));
         }
       },
@@ -176,21 +179,43 @@ class _HomeScreenState extends BaseState<HomeScreen> {
   }
 
   ///Widget returns a list of data returned from API to be viewed
-  Widget _getDataList() {
+  Widget _getDataList(List<ScreenResult>? data, int index) {
     return SizedBox(
       width: width * 0.80,
       child: Card(
-        color: ConstColors.accent,
+        color: ConstColors.card,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              _getDataRow(translate(LangKeys.name), data: "Youssef"),
-              _getDataRow(translate(LangKeys.description), data: "Developer"),
-              _getDataRow(translate(LangKeys.nationality), data: "Egypt"),
-              _getDataRow(translate(LangKeys.placeOfBirth), data: "Ismailia"),
-              _getDataRow(translate(LangKeys.score), data: "97.0"),
+              isGridView
+                  ? _getDataColumnForGrid(translate(LangKeys.name),
+                      data: data?[index].name)
+                  : _getDataRow(translate(LangKeys.name),
+                      data: data?[index].name),
+              isGridView
+                  ? _getDataColumnForGrid(translate(LangKeys.description),
+                      data: data?[index].searchTypes?.first.description)
+                  : _getDataRow(translate(LangKeys.description),
+                      data: data?[index].searchTypes?.first.description),
+              isGridView
+                  ? _getDataColumnForGrid(translate(LangKeys.nationality),
+                      data: data?[index].nat)
+                  : _getDataRow(translate(LangKeys.nationality),
+                      data: data?[index].nat),
+              isGridView
+                  ? _getDataColumnForGrid(translate(LangKeys.placeOfBirth),
+                      data: data?[index].placesOfBirth?.first)
+                  : _getDataRow(translate(LangKeys.placeOfBirth),
+                      data: data?[index].placesOfBirth?.first),
+              isGridView
+                  ? _getDataColumnForGrid(translate(LangKeys.score),
+                      data: data?[index].score.toString())
+                  : _getDataRow(translate(LangKeys.score),
+                      data: data?[index].score.toString()),
             ],
           ),
         ),
@@ -198,7 +223,7 @@ class _HomeScreenState extends BaseState<HomeScreen> {
     );
   }
 
-  ///That widget returns a row that contains data returned from API
+  ///That widget returns a row that contains data returned from API for ListView
   Widget _getDataRow(String title, {String? data}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -207,13 +232,36 @@ class _HomeScreenState extends BaseState<HomeScreen> {
           title,
           style: const TextStyle(
             color: ConstColors.text,
-            fontWeight: FontWeight.w600,
+            fontWeight: FontWeight.w700,
           ),
         ),
         Text(data ?? "-",
+            softWrap: true,
             style: const TextStyle(
               color: ConstColors.text,
-              fontWeight: FontWeight.w700,
+              fontWeight: FontWeight.w600,
+            )),
+      ],
+    );
+  }
+
+  ///That widget returns a row that contains data returned from API for GridView
+  Widget _getDataColumnForGrid(String title, {String? data}) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: const TextStyle(
+            color: ConstColors.text,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        Text(data ?? "-",
+            softWrap: true,
+            style: const TextStyle(
+              color: ConstColors.text,
+              fontWeight: FontWeight.w600,
             )),
       ],
     );
@@ -285,7 +333,10 @@ class _HomeScreenState extends BaseState<HomeScreen> {
                   borderRadius: BorderRadius.all(Radius.circular(10))))),
           onPressed: () {
             Navigator.of(context).pop();
-            _homeBloc.add(SearchButtonEvent());
+            _homeBloc.add(SearchButtonEvent(SearchSendModel(
+                fName: _fNameController.text,
+                mName: _mNameController.text,
+                nat: _natController.text)));
           },
           child: Text(translate(LangKeys.search))),
     );

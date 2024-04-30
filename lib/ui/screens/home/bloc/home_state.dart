@@ -11,7 +11,10 @@ final class NewSearchState extends HomeState {}
 
 final class DataLoadingState extends HomeState {}
 
-final class DataLoadedState extends HomeState {}
+final class DataLoadedState extends HomeState {
+  SearchWrapper data;
+  DataLoadedState(this.data);
+}
 
 class NetworkError extends HomeState {
   final String message;

@@ -5,12 +5,13 @@ import 'package:flutter/material.dart';
 class ConstColors {
 
   static final MaterialColor primarySwatch = generateMaterialColors(app);
-  static const Color appBackgroundColor = Color(0xFF0f4c9d);
-  static const Color selectedTabBackgroundColor = Color(0xFF0f4c9d);
-  static const Color appBarBackgroundColor = Color(0xFF0f4c9d);
-  static const Color app = Color(0xFF0f4c9d);
+  static const Color appBackgroundColor = Color(0xFF0E46A3);
+  static const Color selectedTabBackgroundColor = Color(0xFF0E46A3);
+  static const Color appBarBackgroundColor = Color(0xFF0E46A3);
+  static const Color app = Color(0xFF0E46A3);
+  static const Color card = Color(0xFFE1F7F5);
   static const Color appBarTextColor = Color(0xFFFFFFFF);
-  static const Color lightPrimaryColor = Color(0xFF0f4c9d);
+  static const Color lightPrimaryColor = Color(0xFF0E46A3);
   static const Color shadowColor = Color(0x290f4c9d);
   static const Color textFieldtitleColor = Color(0xFF808080);
   static const Color textFieldColor = Color(0xFFd7dee7);
@@ -20,7 +21,7 @@ class ConstColors {
   static const Color subTitleTextColor = Color(0xFF505050);
   static const Color coolGrey = Color(0xFFaab0bb);
 
-  static const Color text = Color(0xFF2B2C2C);
+  static const Color text = Color(0xFF1E0342);
   static const Color secondaryText = Color(0xFF9E9E9E);
   static const Color textDisabled = Color(0xFFE0E0E0);
   static const Color secondary = Color(0xFF43BB9A);
